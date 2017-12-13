@@ -8,6 +8,7 @@ module.exports = {
             use: 'babel-loader'
         }]
     },
+    target: 'node',
     externals: {
         'russian-router': {
             commonjs: 'russian-router',
