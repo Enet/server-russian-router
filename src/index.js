@@ -16,6 +16,7 @@ let optionsCache = new Map();
 module.exports = class ServerRussianRouter extends RussianRouter {
     constructor (rawRoutes, rawOptions, request) {
         super(rawRoutes, rawOptions);
+        this._mapKeyToString = this._mapKeyToString.bind(this);
 
         try {
             this._currentUri = this._parseRequest(request);
@@ -27,11 +28,7 @@ module.exports = class ServerRussianRouter extends RussianRouter {
 
         const currentUri = this._currentUri;
         const rawUri = currentUri.protocol + '://' + currentUri.domain + ':' + currentUri.port + currentUri.uri;
-        const matchObjects = this.matchUri(rawUri).map((matchObject) => {
-            return Object.assign(matchObject, {
-                key: this._extractKey(matchObject)
-            });
-        });
+        const matchObjects = this.matchUri(rawUri);
         this._matchObjects = matchObjects;
     }
 
@@ -74,7 +71,7 @@ module.exports = class ServerRussianRouter extends RussianRouter {
     }
 
     matchUri (rawUri, ...restArguments) {
-        return super.matchUri(this.resolveUri(rawUri), ...restArguments);
+        return super.matchUri(this.resolveUri(rawUri), ...restArguments).map(this._mapKeyToString);
     }
 
     generateUri () {
@@ -134,6 +131,12 @@ module.exports = class ServerRussianRouter extends RussianRouter {
             };
         }
         return currentUri;
+    }
+
+    _mapKeyToString (matchObject) {
+        return Object.assign({}, matchObject, {
+            key: this._extractKey(matchObject)
+        });
     }
 
     _extractKey (matchObject) {
