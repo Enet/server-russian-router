@@ -55,7 +55,7 @@ Resets the cache of the router's options. After reset all the router's options a
 Resets the cache of the routes' tables. After reset all the routes' tables are parsed again during initialization.
 
 # :blowfish: Examples
-Look at the examples how to use server-russian-router in some cases. If you want to use [react](https://github.com/facebook/react), check out [react-russian-router](https://github.com/Enet/react-russian-router).
+Look at the examples how to use router in some cases. If you want to use [react](https://github.com/facebook/react), check out [react-russian-router](https://github.com/Enet/react-russian-router).
 <details><summary><strong>See examples/routes.js</strong></summary>
 
 ```javascript
@@ -91,7 +91,7 @@ module.exports = {
 <details><summary><strong>See examples/demo.js</strong></summary>
 
 ```javascript
-const ServerRussianRouter = require('../src/index.js');
+const ServerRussianRouter = require('server-russian-router');
 
 const options = {};
 const routes = require('./routes.js');
@@ -142,7 +142,7 @@ console.log(router.getNavigationKey()); // 0
 <details><summary><strong>See examples/node.js</strong></summary>
 
 ```javascript
-const ServerRussianRouter = require('../src/index.js');
+const ServerRussianRouter = require('server-russian-router');
 
 const options = {};
 const routes = require('./routes.js');
@@ -167,7 +167,7 @@ server.listen(port, (error) => {
 <details><summary><strong>See examples/express.js</strong></summary>
 
 ```javascript
-const ServerRussianRouter = require('../src/index.js');
+const ServerRussianRouter = require('server-russian-router');
 const express = require('express'); // npm install express
 
 const options = {};
