@@ -28,32 +28,34 @@ Note that server-russian-router is statical. It means that one instance of `Serv
 
 > Don't worry about performance issues, because server-russian-router has an internal caches for routes' tables and router's options. It doesn't parse `rawRoutes` and `rawOptions` each time, because `parsedRoutes` and `parsedOptions` are already stored to corresponding caches after the first instance was created.
 
-## new ServerRussianRouter(rawRoutes, rawOptions, request)
+## `new ServerRussianRouter(rawRoutes, rawOptions, request)`
 Returns a new instance of `ServerRussianRouter`. Depending on uri from the `request`, default protocol, domain and port are set; also some routes are matched immediately in constructor. Then default values are used for matching and generating another uris, and match objects are available via `router.getMatchObjects`.
 
-## router.resolveUri(rawUri)
+`request` is required and must be presented by native Node.JS request object or by [express](https://github.com/expressjs/express) request object. Also a plain object can be given as well, but it must contain all the corresponding properties: protocol, domain, port, path, query and hash. If so, note that path must be absolute, query and hash are specified without `?` and `#`.
+
+## `router.resolveUri(rawUri)`
 Transforms any `rawUri` to uri, that has an absolute path. The result depends on `request` object, passed to the constructor.
 
-## router.matchUri(rawUri)
+## `router.matchUri(rawUri)`
 Firstly resolves uri using `router.resolveUri`, then matches routes. So the method always matches uri, that has an absolute path.
 
-## router.generateUri(routeName, userParams)
+## `router.generateUri(routeName, userParams)`
 Firstly generates uri, then resolves it using `router.resolveUri`. Returns a uri (string), that has an absolute path.
 
-## router.getMatchObjects()
-Returns already cached array with match objects. The result depends on `request` object, passed to the constructor.
+## `router.getMatchObjects()`
+Returns already cached array of match objects. The result depends on `request` object, passed to the constructor.
 
-## router.getNavigationKey()
+## `router.getNavigationKey()`
 Just a stub method to preserve the same interface with [browser-russian-router](https://github.com/Enet/browser-russian-router). Returns `0` always (because there is no the concept of navigation in server-russian-router).
 
-## ServerRussianRouter.resetOptionsCache()
+## `ServerRussianRouter.resetOptionsCache()`
 Resets the cache of the router's options. After reset all the router's options are parsed again during initialization.
 
-## ServerRussianRouter.resetRoutesCache()
+## `ServerRussianRouter.resetRoutesCache()`
 Resets the cache of the routes' tables. After reset all the routes' tables are parsed again during initialization.
 
 # :blowfish: Examples
-I'll be making more tests and examples over the time. More than zero!
+I'll be making more examples over the time. More than zero!
 
 # :dolphin: Contributors
 Pull requests are welcome :feet: Let improve the package together. But, please, respect the code style.

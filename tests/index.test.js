@@ -180,3 +180,37 @@ test('Router returns correct default values', () => {
         expect(defaultPart + '').toBe(p > 2 ? '' : requests.custom[partName] + '');
     });
 });
+
+test('Router resets routes cache', () => {
+    const startTimeA = Date.now();
+    for (let i = 0; i < 3000; i++) {
+        new ServerRussianRouter(routes, options, requests.custom);
+    }
+    const endTimeA = Date.now();
+
+    const startTimeB = Date.now();
+    for (let i = 0; i < 3000; i++) {
+        ServerRussianRouter.resetRoutesCache();
+        new ServerRussianRouter(routes, options, requests.custom);
+    }
+    const endTimeB = Date.now();
+
+    expect(endTimeB - startTimeB).toBeGreaterThan(endTimeA - startTimeA);
+});
+
+test('Router resets options cache', () => {
+    const startTimeA = Date.now();
+    for (let i = 0; i < 3000; i++) {
+        new ServerRussianRouter(routes, options, requests.custom);
+    }
+    const endTimeA = Date.now();
+
+    const startTimeB = Date.now();
+    for (let i = 0; i < 3000; i++) {
+        ServerRussianRouter.resetOptionsCache();
+        new ServerRussianRouter(routes, options, requests.custom);
+    }
+    const endTimeB = Date.now();
+
+    expect(endTimeB - startTimeB).toBeGreaterThan(endTimeA - startTimeA);
+});
