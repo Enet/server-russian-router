@@ -55,7 +55,140 @@ Resets the cache of the router's options. After reset all the router's options a
 Resets the cache of the routes' tables. After reset all the routes' tables are parsed again during initialization.
 
 # :blowfish: Examples
-I'll be making more examples over the time. More than zero!
+Look at the examples how to use server-russian-router in some cases. If you want to use [react](https://github.com/facebook/react), check out [react-russian-router](https://github.com/Enet/react-russian-router).
+<details><summary><strong>See examples/routes.js</strong></summary>
+
+```javascript
+module.exports = {
+    index: {
+        uri: '/',
+        // {key} will be replaced with navigation key, that is always 0 on the server
+        key: 'index.{key}'
+    },
+    user: {
+        uri: '/user/{id}',
+        params: {
+            id: /\d+/
+        },
+        key: (matchObject) => {
+            return 'user.' + matchObject.params.id
+        }
+    },
+    about: {
+        uri: '/about'
+    },
+    hello: {
+        // Note the relative path here, that's not recommended to use
+        uri: '?hello={entity}',
+        params: {
+            entity: /\w+/
+        }
+    }
+};
+```
+
+</details>
+<details><summary><strong>See examples/demo.js</strong></summary>
+
+```javascript
+const ServerRussianRouter = require('../src/index.js');
+
+const options = {};
+const routes = require('./routes.js');
+const request = {
+    protocol: 'https',
+    domain: 'localhost',
+    port: 443,
+    path: '/user/123',
+    query: '',
+    hash: ''
+};
+
+// Third argument must be node/express request or custom uri like here
+const router = new ServerRussianRouter(routes, options, request);
+
+// Router has already matched all the routes during initialization
+const requestMatchObjects = router.getMatchObjects();
+console.log(requestMatchObjects.length); // 1
+console.log(requestMatchObjects[0].key); // 'User/user.123'
+
+const indexMatchObjects = router.matchUri('/');
+console.log(indexMatchObjects[0].key); // 'User/index.0'
+
+const aboutMatchObjects = router.matchUri('/about');
+console.log(aboutMatchObjects[0].key); // 'RussianRouter/about'
+
+console.log(router.resolveUri('delete')); // '/user/123/delete'
+console.log(router.resolveUri('?xyz=777')); // '/user/123?xyz=777'
+console.log(router.resolveUri('#матрёшка')); // '/user/123#матрёшка'
+console.log(router.resolveUri('?xyz=777#матрёшка')); // '/user/123?xyz=777#матрёшка'
+console.log(router.resolveUri('/already/resolved/')); // '/alrady/resolved/'
+
+const helloMatchObjects = router.matchUri('?hello=world');
+console.log(helloMatchObjects.length); // 2
+console.log(helloMatchObjects[0].name); // 'user'
+console.log(helloMatchObjects[1].name); // 'hello'
+console.log(helloMatchObjects[1].path); // '/user/123'
+console.log(helloMatchObjects[1].query); // {hello: 'world'}
+console.log(helloMatchObjects[1].params.entity); // 'world'
+
+console.log(router.generateUri('about')); // '/about'
+console.log(router.generateUri('hello', {entity: 'world'})); // '/user/123?hello=world'
+
+console.log(router.getNavigationKey()); // 0
+```
+
+</details>
+<details><summary><strong>See examples/node.js</strong></summary>
+
+```javascript
+const ServerRussianRouter = require('../src/index.js');
+
+const options = {};
+const routes = require('./routes.js');
+
+const http = require('http');
+const port = 8080;
+const server = http.createServer((request, response) => {
+    const router = new ServerRussianRouter(routes, options, request);
+    const matchObjects = router.getMatchObjects();
+    response.end(JSON.stringify(matchObjects));
+});
+
+server.listen(port, (error) => {
+    if (error) {
+        throw error;
+    }
+    console.log('Node server is started on ' + port);
+});
+```
+
+</details>
+<details><summary><strong>See examples/express.js</strong></summary>
+
+```javascript
+const ServerRussianRouter = require('../src/index.js');
+const express = require('express'); // npm install express
+
+const options = {};
+const routes = require('./routes.js');
+
+const port = 8080;
+const server = express();
+server.get('*', (request, response) => {
+    const router = new ServerRussianRouter(routes, options, request);
+    const matchObjects = router.getMatchObjects();
+    response.end(JSON.stringify(matchObjects));
+});
+server.listen(port, (error) => {
+    if (error) {
+        throw error;
+    }
+    console.log('Express server is started on ' + port);
+});
+```
+
+</details>
 
 # :dolphin: Contributors
 Pull requests are welcome :feet: Let improve the package together. But, please, respect the code style.
