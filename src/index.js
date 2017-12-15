@@ -1,5 +1,6 @@
 const {
     RussianRouter,
+    RouterError,
     utils
 } = require('russian-router');
 
@@ -14,21 +15,18 @@ let optionsCache = new Map();
 
 module.exports = class ServerRussianRouter extends RussianRouter {
     constructor (rawRoutes, rawOptions, request) {
-        super(...arguments);
+        super(rawRoutes, rawOptions);
 
-        let [path, ...query] = request.url.split('?');
-        query = query.join(encodeURIComponent('?'));
-        const currentUri = {
-            protocol: request.connection.encrypted ? 'https' : 'http',
-            domain: (request.headers ? request.headers.host : request.get('host')).replace(/:\d+$/, ''),
-            port: request.socket.address().port,
-            path,
-            query,
-            hash: ''
-        };
-        this._currentUri = currentUri;
+        try {
+            this._currentUri = this._parseRequest(request);
+        } catch (error) {
+            throw new RouterError(RouterError.CUSTOM_ERROR, {
+                message: 'Request cannot be parsed! Check third argument of ServerRussianRouter constructor.'
+            });
+        }
 
-        const rawUri = currentUri.protocol + '://' + currentUri.domain + ':' + currentUri.port + request.url;
+        const currentUri = this._currentUri;
+        const rawUri = currentUri.protocol + '://' + currentUri.domain + ':' + currentUri.port + currentUri.uri;
         const matchObjects = this.matchUri(rawUri).map((matchObject) => {
             return Object.assign(matchObject, {
                 key: this._extractKey(matchObject)
@@ -107,6 +105,35 @@ module.exports = class ServerRussianRouter extends RussianRouter {
         const parsedRoutes = super._parseRoutes(...arguments);
         routesCache.set(rawRoutes, parsedRoutes);
         return parsedRoutes;
+    }
+
+    _parseRequest (request) {
+        let currentUri = {};
+        utils.forEachPartName((partName) => {
+            if (request.hasOwnProperty(partName)) {
+                currentUri[partName] = request[partName] + '';
+            }
+        });
+        if (Object.keys(currentUri).length === 6) {
+            currentUri.uri = [
+                currentUri.path,
+                currentUri.query ? '?' + currentUri.query : '',
+                currentUri.hash ? '#' + currentUri.hash : ''
+            ].join('');
+        } else {
+            let [path, ...query] = request.url.split('?');
+            query = query.join(encodeURIComponent('?'));
+            currentUri = {
+                uri: request.url,
+                protocol: request.connection.encrypted ? 'https' : 'http',
+                domain: (request.headers ? request.headers.host : request.get('host')).replace(/:\d+$/, ''),
+                port: request.socket.address().port + '',
+                path,
+                query,
+                hash: ''
+            };
+        }
+        return currentUri;
     }
 
     _extractKey (matchObject) {
