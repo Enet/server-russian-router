@@ -130,6 +130,7 @@ module.exports = class ServerRussianRouter extends RussianRouter {
                 hash: ''
             };
         }
+        currentUri.port = +currentUri.port || 0;
         return currentUri;
     }
 

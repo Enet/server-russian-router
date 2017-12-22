@@ -96,8 +96,7 @@ test('Router parses request correctly', () => {
         expect(() => router = new ServerRussianRouter(routes, options, request)).not.toThrow();
         expect(router._currentUri.protocol).toBe('http');
         expect(router._currentUri.domain).toBe('localhost');
-        expect(router._currentUri.port).toBe('80');
-        expect(router._currentUri.port).toBe('80');
+        expect(router._currentUri.port).toBe(80);
         expect(router._currentUri.path).toBe('/');
         expect(router._currentUri.query).toBe('hello=world');
         expect(router._currentUri.hash).toBe('');
@@ -144,6 +143,11 @@ test('Router resolves uri correctly', () => {
     expect(router.resolveUri('/already/resolved/')).toBe('/already/resolved/');
 });
 
+test('Router considers query when resolving relative uri', () => {
+    const router = new ServerRussianRouter(routes, options, requests.custom);
+    expect(router.resolveUri('')).toBe('/?hello=world');
+});
+
 test('Router matches uri correctly', () => {
     let router;
 
@@ -159,8 +163,8 @@ test('Router generates uri correctly', () => {
         dataConsistency: false
     }, requests.user);
     expect(router.generateUri('hello', {entity: 'world'})).toBe('/user/123?hello=world');
-    expect(router.generateUri('hello', {entity: null})).toBe('/user/123');
-    expect(router.generateUri('hello')).toBe('/user/123');
+    expect(router.generateUri('hello', {entity: null})).toBe('/user/123?hello=');
+    expect(router.generateUri('hello')).toBe('/user/123?hello=');
 });
 
 test('Router returns correct navigation key', () => {
@@ -177,7 +181,11 @@ test('Router returns correct default values', () => {
         const defaultPart = router.getDefaultPart(partName);
         const PartConstructor = utils.getPartConstructor(partName);
         expect(defaultPart).toBeInstanceOf(PartConstructor);
-        expect(defaultPart + '').toBe(p > 2 ? '' : requests.custom[partName] + '');
+        if (partName === 'path' || partName === 'query') {
+            expect(defaultPart + '').toBe('');
+        } else {
+            expect(defaultPart + '').toBe(requests.custom[partName] + '');
+        }
     });
 });
 
@@ -213,4 +221,30 @@ test('Router resets options cache', () => {
     const endTimeB = Date.now();
 
     expect(endTimeB - startTimeB).toBeGreaterThan(endTimeA - startTimeA);
+});
+
+test('Router recognizes https instead http', () => {
+    const router = new ServerRussianRouter(routes, options, Object.assign({}, requests.express, {
+        connection: {
+            encrypted: true
+        }
+    }));
+
+    expect(router.getDefaultPart('protocol').toString()).toBe('https');
+});
+
+test('Router recognizes hash', () => {
+    const router = new ServerRussianRouter(routes, options, Object.assign({}, requests.custom, {
+        hash: 'asdf'
+    }));
+
+    expect(router._currentUri.hash).toBe('asdf');
+});
+
+test('Router detects port by protocol', () => {
+    const router = new ServerRussianRouter(routes, options, Object.assign({}, requests.custom, {
+        port: ''
+    }));
+
+    expect(router.getDefaultPart('port').toString()).toBe('80');
 });
