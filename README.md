@@ -2,6 +2,8 @@
 
 [![npm version](https://img.shields.io/npm/v/server-russian-router.svg)](https://www.npmjs.com/package/server-russian-router)
 [![gzip size](http://img.badgesize.io/https://npmcdn.com/server-russian-router/dist/server-russian-router.min.js?compression=gzip)](https://npmcdn.com/server-russian-router/dist/server-russian-router.min.js?compression=gzip)
+[![test coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/Enet/russian-router)
+[![stepan zhevak](https://img.shields.io/badge/stepan-zhevak-1a8b8e.svg)](https://zhevak.name)
 
 Here is a universal javascript router for server environment. It allows to match and generate uris on Node.JS with the same algorithms and routes as in the browser. If you use [react](https://github.com/facebook/react), be sure to take a look at [react-russian-router](https://github.com/Enet/react-russian-router), that is isomorphic/universal and uses inside both [browser-russian-router](https://github.com/Enet/browser-russian-router) and [server-russian-router](https://github.com/Enet/server-russian-router).
 
