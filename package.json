@@ -54,6 +54,7 @@
   },
   "jest": {
     "collectCoverage": true,
+    "collectCoverageFrom": ["src/**"],
     "verbose": true
   }
 }
