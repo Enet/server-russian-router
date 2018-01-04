@@ -1,5 +1,7 @@
 # :ru: server-russian-router :computer:
 
+<img src="https://raw.githubusercontent.com/Enet/server-russian-router/master/server-russian-router.svg?sanitize=true" width="210" height="210" />
+
 [![npm version](https://img.shields.io/npm/v/server-russian-router.svg)](https://www.npmjs.com/package/server-russian-router)
 [![gzip size](http://img.badgesize.io/https://npmcdn.com/server-russian-router/dist/server-russian-router.min.js?compression=gzip)](https://npmcdn.com/server-russian-router/dist/server-russian-router.min.js?compression=gzip)
 [![test coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/Enet/russian-router)
